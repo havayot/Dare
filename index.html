@@ -578,12 +578,24 @@
         <div class="game-screen" id="gameScreen">
             <div class="game-area">
 			<button class="next-turn" onclick="nextTurn()" style="display: none;" id="nextTurnBtn">תור הבא</button>
-                <div class="card-decks">
-				  <div class="card-deck" onclick="drawCard('bold')">
+                <div class="card-decks" id="cardDecksWrapper" style="position: relative;">
+    <div id="deckOverlay" style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.6);
+        z-index: 10;
+        display: none;
+        cursor: not-allowed;
+        border-radius: 12px;
+    "></div>
+				  <div class="card-deck" onclick="handleDeckClick('bold')">
 					<img src="bold_deck.png" alt="Bold Deck" class="deck-img" />
 					<div class="deck-label">ערימת האמיצים</div>
 				  </div>
-				  <div class="card-deck" onclick="drawCard('solid')">
+				  <div class="card-deck" onclick="handleDeckClick('solid')">
 					<img src="solid_deck.png" alt="Solid Deck" class="deck-img" />
 					<div class="deck-label">ערימת הפחדנים</div>
 				  </div>
@@ -662,6 +674,8 @@
         let currentPlayerIndex = 0;
         let currentCard = null;
         let cardDrawn = false;
+let canDrawCard = true;
+            document.getElementById('deckOverlay').style.display = 'none';
         let swapMode = false;
 
         function startGame() {
@@ -841,12 +855,21 @@
             }, 2000);
         }
 
+        
+        function handleDeckClick(deckType) {
+            if (!canDrawCard) return;
+
+            drawCard(deckType);
+            canDrawCard = false;
+
+            document.getElementById('deckOverlay').style.display = 'block';
+        }
+
+
         function nextTurn() {
-            if (swapMode) {
-                cancelSwap();
-                return;
-            }
-            
+            canDrawCard = true;
+            document.getElementById('deckOverlay').style.display = 'none';
+
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             updateCurrentPlayer();
             updatePlayersList();
@@ -867,6 +890,8 @@
             if (players[currentPlayerIndex].skipCards > 0) {
                 players[currentPlayerIndex].skipCards--;
                 updatePlayersList();
+                canDrawCard = true;
+                document.getElementById('deckOverlay').style.display = 'none';
                 alert(`${players[currentPlayerIndex].name} בחר\ה לדלג על משימה!`);
                 nextTurn();
             }
@@ -882,6 +907,8 @@
         function selectPlayerForSwap(targetIndex) {
             if (swapMode && players[currentPlayerIndex].swapCards > 0) {
                 players[currentPlayerIndex].swapCards--;
+                canDrawCard = true;
+                document.getElementById('deckOverlay').style.display = 'none';
                 
                 alert(`${players[currentPlayerIndex].name} השתמש\ה בהחלף! ${players[targetIndex].name} את\ה תשלימ\י את המשימה במקום.`);
                 
