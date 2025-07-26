@@ -108,8 +108,14 @@
             color: #666;
         }
 
-        .start-btn {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .button-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .start-btn, .manage-tasks-btn, .back-btn {
             color: white;
             border: none;
             padding: 15px 40px;
@@ -119,11 +125,21 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            display: block;
-            margin: 0 auto;
         }
 
-        .start-btn:hover {
+        .start-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .manage-tasks-btn {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .start-btn:hover, .manage-tasks-btn:hover, .back-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 25px rgba(0,0,0,0.2);
         }
@@ -146,97 +162,77 @@
             flex-direction: column;
         }
 
-        .deck-selection {
-            margin-bottom: 30px;
-        }
-
-        .deck-selection h3 {
-            margin-bottom: 20px;
-            color: #4a5568;
-            font-size: 1.4rem;
-        }
-
-        .deck-buttons {
+        .card-decks {
             display: flex;
-            gap: 20px;
             justify-content: center;
-        }
-
-        .deck-btn {
+            gap: 40px;
+            margin-top: 40px;
             position: relative;
-            padding: 20px 40px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
+        }
+
+        .card-deck {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .deck-btn::before,
-        .deck-btn::after {
-            content: '';
+        .card-deck:hover {
+            transform: scale(1.08) rotate(-2deg);
+        }
+
+        .card-deck.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(0.95);
+        }
+
+        .card-deck.disabled:hover {
+            transform: scale(0.95);
+        }
+
+        .deck-img {
+            width: 120px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .deck-label {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .group-deck-requirement {
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border-radius: 15px;
-            z-index: -1;
-            transition: all 0.3s ease;
-        }
-
-        .deck-btn::before {
-            top: -4px;
-            left: -4px;
-            opacity: 0.7;
-        }
-
-        .deck-btn::after {
-            top: -6px;
-            left: -6px;
-            opacity: 0.4;
-        }
-
-        .deck-btn.bold {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f59e0b;
             color: white;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10;
         }
 
-        .deck-btn.bold::before {
-            background: linear-gradient(135deg, #ff5252 0%, #d84315 100%);
-        }
-
-        .deck-btn.bold::after {
-            background: linear-gradient(135deg, #ff3030 0%, #bf360c 100%);
-        }
-
-        .deck-btn.solid {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            color: white;
-        }
-
-        .deck-btn.solid::before {
-            background: linear-gradient(135deg, #26a69a 0%, #2e7d32 100%);
-        }
-
-        .deck-btn.solid::after {
-            background: linear-gradient(135deg, #00897b 0%, #1b5e20 100%);
-        }
-
-        .deck-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
-        }
-
-        .deck-btn:hover::before {
-            transform: translateY(2px);
-        }
-
-        .deck-btn:hover::after {
-            transform: translateY(4px);
+        #deckOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+            display: none;
+            cursor: not-allowed;
+            border-radius: 12px;
         }
 
         .card-display {
@@ -272,6 +268,11 @@
         .card.solid {
             border-color: #4ecdc4;
             background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%);
+        }
+
+        .card.group {
+            border-color: #9333ea;
+            background: linear-gradient(135deg, #f3e8ff 0%, #ddd6fe 100%);
         }
 
         .card h4 {
@@ -428,6 +429,43 @@
             cursor: not-allowed;
         }
 
+        .swap-mode {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #fbbf24;
+        }
+
+        .forfeiture-mode {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+        }
+
+        .swap-instruction, .forfeiture-instruction {
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .swap-instruction {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .forfeiture-instruction {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
         .fireworks {
             position: fixed;
             top: 0;
@@ -461,29 +499,182 @@
             }
         }
 
-        .swap-mode {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border: 2px solid #fbbf24;
+        /* Task Management Styles */
+        .task-management {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
-        .swap-instruction {
+        .task-management h2 {
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .deck-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .deck-tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .deck-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .deck-management {
+            display: none;
+        }
+
+        .deck-management.active {
+            display: block;
+        }
+
+        .add-task-form {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .add-task-form h3 {
+            margin-bottom: 15px;
+            color: #4a5568;
+        }
+
+        .task-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .add-task-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-task-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .tasks-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .task-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .delete-task-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .delete-task-btn:hover {
+            background: #dc2626;
+        }
+
+        .forfeiture-selector {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ef4444;
+        }
+
+        .forfeiture-selector h4 {
+            color: #ef4444;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .forfeiture-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .forfeiture-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .forfeiture-skip {
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             color: white;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
+        .forfeiture-swap {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .forfeiture-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .forfeiture-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         @media (max-width: 768px) {
@@ -505,39 +696,17 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .button-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .card-decks {
+                gap: 20px;
+                flex-wrap: wrap;
+            }
         }
-		.card-decks {
-		  display: flex;
-		  justify-content: center;
-		  gap: 60px;
-		  margin-top: 40px;
-		}
-
-		.card-deck {
-		  display: flex;
-		  flex-direction: column;
-		  align-items: center;
-		  cursor: pointer;
-		  transition: transform 0.3s ease;
-		}
-
-		.card-deck:hover {
-		  transform: scale(1.08) rotate(-2deg);
-		}
-
-		.deck-img {
-		  width: 120px;
-		  height: auto;
-		  border-radius: 10px;
-		  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-		}
-
-		.deck-label {
-		  margin-top: 10px;
-		  font-weight: bold;
-		  font-size: 1.1rem;
-		  color: #333;
-		}
     </style>
 </head>
 <body>
@@ -547,6 +716,7 @@
             <p>משחק זוגות מרגש</p>
         </div>
 
+        <!-- Setup Screen -->
         <div class="setup-screen" id="setupScreen">
             <h2>הכניסו את שמות השחקנים</h2>
             <div class="couples-grid">
@@ -563,50 +733,104 @@
                         <input type="text" class="name-input" value="שרית" data-couple="1" data-gender="male">
                         <input type="text" class="name-input" value="דוד" data-couple="1" data-gender="female">
                     </div>
-		</div>
+                </div>
             </div>
-            <button class="start-btn" onclick="startGame()">נתחיל</button>
+            <div class="button-row">
+                <button class="start-btn" onclick="startGame()">נתחיל</button>
+                <button class="manage-tasks-btn" onclick="showTaskManagement()">ניהול משימות</button>
+            </div>
         </div>
 
+        <!-- Task Management Screen -->
+        <div class="task-management" id="taskManagement">
+            <h2>ניהול משימות</h2>
+            <div class="deck-tabs">
+                <button class="deck-tab active" onclick="switchTab('bold')">ערימת האמיצים</button>
+                <button class="deck-tab" onclick="switchTab('solid')">ערימת הפחדנים</button>
+                <button class="deck-tab" onclick="switchTab('group')">משימות קבוצתיות</button>
+            </div>
+
+            <div class="deck-management active" id="boldManagement">
+                <div class="add-task-form">
+                    <h3>הוסף משימה חדשה לערימת האמיצים</h3>
+                    <textarea class="task-input" id="boldTaskInput" placeholder="הכנס משימה חדשה..."></textarea>
+                    <button class="add-task-btn" onclick="addTask('bold')">הוסף משימה</button>
+                </div>
+                <div class="tasks-list" id="boldTasksList"></div>
+            </div>
+
+            <div class="deck-management" id="solidManagement">
+                <div class="add-task-form">
+                    <h3>הוסף משימה חדשה לערימת הפחדנים</h3>
+                    <textarea class="task-input" id="solidTaskInput" placeholder="הכנס משימה חדשה..."></textarea>
+                    <button class="add-task-btn" onclick="addTask('solid')">הוסף משימה</button>
+                </div>
+                <div class="tasks-list" id="solidTasksList"></div>
+            </div>
+
+            <div class="deck-management" id="groupManagement">
+                <div class="add-task-form">
+                    <h3>הוסף משימה קבוצתית חדשה</h3>
+                    <textarea class="task-input" id="groupTaskInput" placeholder="הכנס משימה קבוצתית חדשה..."></textarea>
+                    <button class="add-task-btn" onclick="addTask('group')">הוסף משימה</button>
+                </div>
+                <div class="tasks-list" id="groupTasksList"></div>
+            </div>
+
+            <div class="button-row">
+                <button class="back-btn" onclick="backToSetup()">חזור למסך הבית</button>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
         <div class="game-screen" id="gameScreen">
             <div class="game-area">
-			<button class="next-turn" onclick="nextTurn()" style="display: none;" id="nextTurnBtn">תור הבא</button>
+                <button class="next-turn" onclick="nextTurn()" style="display: none;" id="nextTurnBtn">תור הבא</button>
+                
+                <!-- Forfeiture Selector for Group Deck -->
+                <div id="forfeitureSelector" class="forfeiture-selector" style="display: none;">
+                    <h4>בחר איזה כרטיס לוותר עליו כדי לקחת משימה קבוצתית:</h4>
+                    <div class="forfeiture-options">
+                        <button class="forfeiture-btn forfeiture-skip" id="forfeitSkipBtn" onclick="forfeitCard('skip')">
+                            וותר על כרטיס עבור
+                        </button>
+                        <button class="forfeiture-btn forfeiture-swap" id="forfeitSwapBtn" onclick="forfeitCard('swap')">
+                            וותר על כרטיס החלף
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card-decks" id="cardDecksWrapper" style="position: relative;">
-    <div id="deckOverlay" style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(255, 255, 255, 0.6);
-        z-index: 10;
-        display: none;
-        cursor: not-allowed;
-        border-radius: 12px;
-    "></div>
-				  <div class="card-deck" onclick="handleDeckClick('bold')">
-					<img src="bold_deck.png" alt="Bold Deck" class="deck-img" />
-					<div class="deck-label">ערימת האמיצים</div>
-				  </div>
-				  <div class="card-deck" onclick="handleDeckClick('solid')">
-					<img src="solid_deck.png" alt="Solid Deck" class="deck-img" />
-					<div class="deck-label">ערימת הפחדנים</div>
-				  </div>
-				</div>
+                    <div id="deckOverlay"></div>
+                    <div class="card-deck" onclick="handleDeckClick('bold')">
+                        <img src="bold_deck.png" alt="Bold Deck" class="deck-img" />
+                        <div class="deck-label">ערימת האמיצים</div>
+                    </div>
+                    <div class="card-deck" onclick="handleDeckClick('solid')">
+                        <img src="solid_deck.png" alt="Solid Deck" class="deck-img" />
+                        <div class="deck-label">ערימת הפחדנים</div>
+                    </div>
+                    <div class="card-deck" id="groupDeck" onclick="handleDeckClick('group')">
+                        <div class="group-deck-requirement" id="groupRequirement" style="display: none;">
+                            דרוש כרטיס עבור/החלף
+                        </div>
+                        <img src="group_deck.png" alt="Group Deck" class="deck-img" />
+                        <div class="deck-label">משימות קבוצתיות</div>
+                    </div>
+                </div>
 
                 <div class="card-display" id="cardDisplay">
                     <div class="card" id="currentCard">
-                        <h4>Welcome!</h4>
-                        <p>Choose a deck to draw your first card.</p>
+                        <h4>ברוכים הבאים!</h4>
+                        <p>בחרו ערימה כדי למשוך את הקלף הראשון שלכם.</p>
                     </div>
                 </div>
-                
             </div>
 
             <div class="sidebar">
                 <h3>שחקנים</h3>
                 <div class="current-player" id="currentPlayer">
-                    Current Turn: Ready to start
+                    התור הנוכחי: מוכנים להתחיל
                 </div>
                 <div id="playersList"></div>
             </div>
@@ -614,76 +838,118 @@
     </div>
 
     <script>
-        // Game configuration - easily editable
-        const gameConfig = {
-	  bold: {
-	    regular: [
-	      //"חובה: נשק/י את בן/בת זוגך בלשון – למשך 30 שניות",
-	       "עמבוש עליך - לך לבד ל2 דקות מאיזור המשחק, הקבוצה תתייעץ איזו משימה להטיל עליך",
-	      "חובה: שב/י על הברכיים של מישהו שאינו בן/בת הזוג שלך ל-3 דקות",
-	      "משימה קבוצתית: על כל הבנות להתנשק כ-3 דקות",
-	      "חובה: הסר/י שני פריטי לבוש (לא תחתונים... עדיין)",
-	      //"חובה עליך להיכנס למים עם מי שרוב הקבוצה יחליטו למשך 10 דקות",
-	      "חובה: תן/י עיסוי צוואר/גב מתחת לבגדים למישהו מהקבוצה",
-	      //"חובה עליך להשתין לכוס, בפני כולם, ולהניח על השולחן במידה ויהיה ביקוש למשתתף צמא",    
-	      "חובה: תאר/י בפירוט את הפנטזיה המינית הכי מטורפת שלך",
-	      "חובה עליך לשכב על הגב עם כיסוי לעיניים, אחד המשתתפים יבחר 4 דק' לעשות בך דבר מה - ניחשת בהצלחה,הטל על משתתף זה חובה כרצונך",
-	      "חובה: הניח/י יד על הירך הפנימית של האדם מימינך למשך דקה",
-	      "החביאו קובית משחק בגוף הפרטנר החלו,התחילו חיפושים בגוף האחר, הזוג המסיק חייבים לקחת קלף מהחפיסה האדומה",
-	      "חובה: בחר משתתף והכנס לו אצבע לחור התחת, לקק את האצבע מול כולם",
-	      "חובה: לכו לחדר אחר עם בן/בת הזוג של מישהו אחר ל-5 דקות (רק נשיקות/ליטופים)",
-	      "חובה: תן/י נשיקה על מקום לא שגרתי (צוואר, כתף, יד) למישהו שאינו בן/בת הזוג שלך",
-	      "חובה: שכב/ו על הגב, ומישהו מהקבוצה יניח קוביית קרח על הבטן שלך עד שתנמס",
-	      "חובה עליך לאונן מול כולם עד גמירה (תוכל\י להשתמש באחד מהצעצועים, או להיעזר באחד המשתתפים לבחרתך)",
-	      "חובה: הסר/י פריט לבוש אחד בצורה הכי סקסית שאת/ה יכול/ה",
-	      //"חובה: אם יש לך תחתונים עם דוגמה, הרא/י אותם לקבוצה",
-	      //"אם יש כוס עם שתן - תרגיש חופשי ללגום לגימה - אחרת: הקבוצה תבחר משתתף שישתין עליך במקלחת - עשה מקלחת עם המשתתף",
-	      "הורד בגדים עד תחתון (וחזיה אם יש)",
-	      "כל שאר השחקנים ילכו להתבודד ל 5 דקות, אתה נשאר עצוב וגלמוד",
-	      "בחר משתתף שיכסה את עיניו - הקבוצה בשקט תעשה לו (מלבד חדירה) ככל העולה על רוח הקבוצה כ-5 דקות",
-	      "ספר על סטייה מינית מיוחדת שיש בך"
-	    ],
-	    bonus: [
-	      "בונוס 🎁: כל המשתתפים מקבלים כרטיס 'עבור' נוסף!",
-	      "בונוס 🎯: בחר/י משתתף שיאבד כרטיס 'עבור'",
-	      "בונוס 🔄: החלף מקומות עם זוג אחר בסיבוב הקרוב",
-	      "בונוס 😂: כל המשתתפים חייבים לשתף סוד מצחיק אחד",
-	      "בונוס 🎁: קיבלת הגנה למשך 2 סיבובים תוכל לבחור שלא להשתתף!",
-	      "בונוס ➕: קבל/י כרטיס 'החלף' נוסף לשימוש עתידי",
-	      "בונוס 💡: שאל את בן/בת הזוג שאלה אמיצה במיוחד",
-	      "בונוס 🔥: בחר/י משתתף אחר לבצע משימה במקומך (ללא שימוש בכרטיס)"
-	    ]
-	  },
-	  solid: {
-	    regular: [
-	      "חובה: נשק/י את בן/בת הזוג שלך בלשון למשך 15 שניות",
-	      "חובה: שב/י על הברכיים של האדם מימינך למשך דקה",
-	      "חובה: החלף/י חולצה/פריט לבוש אחד עם מישהו שאינו בן/בת הזוג שלך",
-	      "חובה: תן/י עיסוי גב לאדם שיבחר בן/בת הזוג שלך (ללא הסרת בגדים)",
-	      "חובה: רקד/י ריקוד סקסי מול בן/בת הזוג של מישהו אחר בקבוצה",
-	      "חובה: לחש/י משהו ארוטי באוזן של האדם משמאלך (בקול שכל הקבוצה תשמע)",
-	      "חובה: שתו לגימה מהמשקה של האדם שמימינכם – בלי להשתמש בידיים",
-	      "חובה: תן/י נשיקה על הצוואר למישהו שאינו בן/בת הזוג שלך",
-	      "חובה: שב/י בתנוחה הכי סקסית שאת/ה יכול/ה, והקבוצה תצביע אם הצלחת",
-	      "חובה: הניח/י יד על הירך של האדם מימינך למשך סיבוב אחד",
-	      "חובה: חיקו את התנוחה המינית הכי מגוחכת שאתם מכירים",
-	      "ספר מה הפנטזיה הכי פרועה שלך",
-	      "חובה: לכו לפינה עם בן/בת הזוג שלך ל-2 דקות של נשיקות ",
-	      "חובה: אמור/י משהו מיני-דו-משמעי לבן/בת הזוג של מישהו אחר",
-	      "חובה: הסר/י פריט לבוש אחד (לא תחתונים!) ותלי אותו על כיסא",
-	      "ספר מה הכי יפה אצל כל אחד מהמשתתפים"
-	    ]
-	  }
-	};
+        // Game configuration - loaded from external file or fallback
+        let gameConfig = {
+            bold: {
+                regular: [
+                    "עמבוש עליך - לך לבד ל2 דקות מאיזור המשחק, הקבוצה תתייעץ איזו משימה להטיל עליך",
+                    "חובה: שב/י על הברכיים של מישהו שאינו בן/בת הזוג שלך ל-3 דקות",
+                    "משימה קבוצתית: על כל הבנות להתנשק כ-3 דקות",
+                    "חובה: הסר/י שני פריטי לבוש (לא תחתונים... עדיין)",
+                    "חובה: תן/י עיסוי צוואר/גב מתחת לבגדים למישהו מהקבוצה",
+                    "חובה עליך להשתין לכוס, בפני כולם, ולהניח על השולחן במידה ויהיה ביקוש למשתתף צמא",
+                    "חובה: תאר/י בפירוט את הפנטזיה המינית הכי מטורפת שלך",
+                    "חובה עליך לשכב על הגב עם כיסוי לעיניים, אחד המשתתפים יבחר 4 דק' לעשות בך דבר מה - ניחשת בהצלחה,הטל על משתתף זה חובה כרצונך",
+                    "חובה: הניח/י יד על הירך הפנימית של האדם מימינך למשך דקה",
+                    "החביאו קובית משחק בגוף הפרטנר החלו,התחילו חיפושים בגוף האחר, הזוג המסיק חייבים לקחת קלף מהחפיסה האדומה",
+                    "חובה: בחר משתתף והכנס לו אצבע לחור התחת, לקק את האצבע מול כולם",
+                    "חובה: לכו לחדר אחר עם בן/בת הזוג של מישהו אחר ל-5 דקות (רק נשיקות/ליטופים)",
+                    "חובה: תן/י נשיקה על מקום לא שגרתי (צוואר, כתף, יד) למישהו שאינו בן/בת הזוג שלך",
+                    "חובה: שכב/ו על הגב, ומישהו מהקבוצה יניח קוביית קרח על הבטן שלך עד שתנמס",
+                    "חובה עליך לאונן מול כולם עד גמירה (תוכל\\י להשתמש באחד מהצעצועים, או להיעזר באחד המשתתפים לבחרתך)",
+                    "חובה: הסר/י פריט לבוש אחד בצורה הכי סקסית שאת/ה יכול/ה",
+                    "אם יש כוס עם שתן - תרגיש חופשי ללגום לגימה - אחרת: הקבוצה תבחר משתתף שישתין עליך במקלחת - עשה מקלחת עם המשתתף",
+                    "הורד בגדים עד תחתון (וחזיה אם יש)",
+                    "כל שאר השחקנים ילכו להתבודד ל 5 דקות, אתה נשאר עצוב וגלמוד",
+                    "בחר משתתף שיכסה את עיניו - הקבוצה בשקט תעשה לו (מלבד חדירה) ככל העולה על רוח הקבוצה כ-5 דקות",
+                    "ספר על סטייה מינית מיוחדת שיש בך"
+                ],
+                bonus: [
+                    "בונוס 🎁: כל המשתתפים מקבלים כרטיס 'עבור' נוסף!",
+                    "בונוס 🎯: בחר/י משתתף שיאבד כרטיס 'עבור'",
+                    "בונוס 🔄: החלף מקומות עם זוג אחר בסיבוב הקרוב",
+                    "בונוס 😂: כל המשתתפים חייבים לשתף סוד מצחיק אחד",
+                    "בונוס 🎁: קיבלת הגנה למשך 2 סיבובים תוכל לבחור שלא להשתתף!",
+                    "בונוס ➕: קבל/י כרטיס 'החלף' נוסף לשימוש עתידי",
+                    "בונוס 💡: שאל את בן/בת הזוג שאלה אמיצה במיוחד",
+                    "בונוס 🔥: בחר/י משתתף אחר לבצע משימה במקומך (ללא שימוש בכרטיס)"
+                ]
+            },
+            solid: {
+                regular: [
+                    "חובה: נשק/י את בן/בת הזוג שלך בלשון למשך 15 שניות",
+                    "חובה: שב/י על הברכיים של האדם מימינך למשך דקה",
+                    "חובה: החלף/י חולצה/פריט לבוש אחד עם מישהו שאינו בן/בת הזוג שלך",
+                    "חובה: תן/י עיסוי גב לאדם שיבחר בן/בת הזוג שלך (ללא הסרת בגדים)",
+                    "חובה: רקד/י ריקוד סקסי מול בן/בת הזוג של מישהו אחר בקבוצה",
+                    "חובה: לחש/י משהו ארוטי באוזן של האדם משמאלך (בקול שכל הקבוצה תשמע)",
+                    "חובה: שתו לגימה מהמשקה של האדם שמימינכם – בלי להשתמש בידיים",
+                    "חובה: תן/י נשיקה על הצוואר למישהו שאינו בן/בת הזוג שלך",
+                    "חובה: שב/י בתנוחה הכי סקסית שאת/ה יכול/ה, והקבוצה תצביע אם הצלחת",
+                    "חובה: הניח/י יד על הירך של האדם מימינך למשך סיבוב אחד",
+                    "חובה: חיקו את התנוחה המינית הכי מגוחכת שאתם מכירים",
+                    "ספר מה הפנטזיה הכי פרועה שלך",
+                    "חובה: לכו לפינה עם בן/בת הזוג שלך ל-2 דקות של נשיקות",
+                    "חובה: אמור/י משהו מיני-דו-משמעי לבן/בת הזוג של מישהו אחר",
+                    "חובה: הסר/י פריט לבוש אחד (לא תחתונים!) ותלי אותו על כיסא",
+                    "ספר מה הכי יפה אצל כל אחד מהמשתתפים"
+                ]
+            },
+            group: {
+                regular: [
+                    "משימה קבוצתית: כל המשתתפים יוצרים מעגל ונותנים עיסוי לאדם שלידם למשך 5 דקות",
+                    "משימה קבוצתית: כולם חייבים לשתף סוד אחד שמביך אותם",
+                    "משימה קבוצתית: הבנות נשארות בחדר והבנים יוצאים לדקה - הבנות מחליטות על משימה משותפת לבנים",
+                    "משימה קבוצתית: כל זוג חייב לבחור זוג אחר ולתת להם נשיקה משותפת (כל אחד נושק אחד מהזוג השני)",
+                    "משימה קבוצתית: כולם מורידים פריט לבוש אחד ויוצרים ערימה משותפת - אחר כך כל אחד מגרל פריט אקראי ללבוש",
+                    "משימה קבוצתית: חברו לזוגות חדשים (לא הזוגות המקוריים) והתנשקו למשך דקתיים",
+                    "משימה קבוצתית: כל המשתתפים יוצרים שרשרת אנושית ונועלים ידיים למשך 10 דקות",
+                    "משימה קבוצתית: הקבוצה בוחרת את שני האנשים הכי יפים ונותנת להם לבחור משימה לשאר הקבוצה",
+                    "משימה קבוצתית: כולם חייבים לספר מה הם הכי אוהבים אצל האדם מימינם (משהו פיזי)",
+                    "משימה קבוצתית: בנות לבד וגברים לבד - כל קבוצה מחליטה על משימה לקבוצה השנייה",
+                    "משימה קבוצתית: כולם חייבים להתוודות על פנטזיה שיש להם על מישהו אחר בחבורה",
+                    "משימה קבוצתית: יוצרים תחרות ריקודים סקסיים - כל זוג נגד זוג אחר"
+                ],
+                bonus: [
+                    "בונוס קבוצתי 🎉: כל המשתתפים מקבלים כרטיס נוסף לבחירתם (עבור או החלף)!",
+                    "בונוס קבוצתי 🎯: הקבוצה מחליטה מי מאבד כרטיס",
+                    "בונוס קבוצתי 🔄: ערבבו את סדר השחקנים מחדש",
+                    "בונוס קבוצתי 💫: הקבוצה יכולה לבטל את הסיבוב הקרוב של מישהו"
+                ]
+            }
+        };
 
         let players = [];
         let currentPlayerIndex = 0;
         let currentCard = null;
         let cardDrawn = false;
-let canDrawCard = true;
-            document.getElementById('deckOverlay').style.display = 'none';
+        let canDrawCard = true;
         let swapMode = false;
+        let forfeitureMode = false;
+        let currentActiveTab = 'bold';
 
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameConfig();
+            updateTaskManagementDisplay();
+        });
+
+        // Load game configuration from external file (fallback to inline config)
+        async function loadGameConfig() {
+            try {
+                const response = await fetch('gameConfig.json');
+                if (response.ok) {
+                    const externalConfig = await response.json();
+                    gameConfig = externalConfig;
+                    console.log('Loaded external game configuration');
+                }
+            } catch (error) {
+                console.log('Using fallback game configuration');
+            }
+            updateTaskManagementDisplay();
+        }
+
+        // Setup and Navigation Functions
         function startGame() {
             const nameInputs = document.querySelectorAll('.name-input');
             let allNamesFilled = true;
@@ -695,7 +961,7 @@ let canDrawCard = true;
             });
 
             if (!allNamesFilled) {
-                alert('Please enter all player names before starting the game.');
+                alert('אנא הכניסו את כל שמות השחקנים לפני תחילת המשחק.');
                 return;
             }
 
@@ -718,8 +984,91 @@ let canDrawCard = true;
             // Initialize game display
             updatePlayersList();
             updateCurrentPlayer();
+            updateGroupDeckStatus();
         }
 
+        function showTaskManagement() {
+            document.getElementById('setupScreen').style.display = 'none';
+            document.getElementById('taskManagement').style.display = 'block';
+            updateTaskManagementDisplay();
+        }
+
+        function backToSetup() {
+            document.getElementById('taskManagement').style.display = 'none';
+            document.getElementById('setupScreen').style.display = 'block';
+        }
+
+        // Task Management Functions
+        function switchTab(deckType) {
+            // Update tab buttons
+            document.querySelectorAll('.deck-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update deck management sections
+            document.querySelectorAll('.deck-management').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(deckType + 'Management').classList.add('active');
+
+            currentActiveTab = deckType;
+        }
+
+        function addTask(deckType) {
+            const inputId = deckType + 'TaskInput';
+            const input = document.getElementById(inputId);
+            const taskText = input.value.trim();
+
+            if (taskText === '') {
+                alert('אנא הכניסו טקסט משימה');
+                return;
+            }
+
+            // Add task to gameConfig
+            if (!gameConfig[deckType]) {
+                gameConfig[deckType] = { regular: [] };
+            }
+            if (!gameConfig[deckType].regular) {
+                gameConfig[deckType].regular = [];
+            }
+
+            gameConfig[deckType].regular.push(taskText);
+            input.value = '';
+
+            // Update display
+            updateTaskManagementDisplay();
+        }
+
+        function deleteTask(deckType, taskIndex) {
+            if (confirm('האם אתם בטוחים שאתם רוצים למחוק את המשימה הזו?')) {
+                gameConfig[deckType].regular.splice(taskIndex, 1);
+                updateTaskManagementDisplay();
+            }
+        }
+
+        function updateTaskManagementDisplay() {
+            ['bold', 'solid', 'group'].forEach(deckType => {
+                const listElement = document.getElementById(deckType + 'TasksList');
+                if (!listElement) return;
+
+                listElement.innerHTML = '';
+
+                if (gameConfig[deckType] && gameConfig[deckType].regular) {
+                    gameConfig[deckType].regular.forEach((task, index) => {
+                        const taskItem = document.createElement('div');
+                        taskItem.className = 'task-item';
+                        taskItem.innerHTML = `
+                            <div class="task-text">${task}</div>
+                            <button class="delete-task-btn" onclick="deleteTask('${deckType}', ${index})">מחק</button>
+                        `;
+                        listElement.appendChild(taskItem);
+                    });
+                }
+            });
+        }
+
+        // Game Logic Functions
         function updatePlayersList() {
             const playersList = document.getElementById('playersList');
             playersList.innerHTML = '';
@@ -728,7 +1077,7 @@ let canDrawCard = true;
             if (swapMode) {
                 const swapInstruction = document.createElement('div');
                 swapInstruction.className = 'swap-instruction';
-                swapInstruction.textContent = 'לחצ\י על שחקן שיקבל את המשימה במקומך';
+                swapInstruction.textContent = 'לחצ\\י על שחקן שיקבל את המשימה במקומך';
                 playersList.appendChild(swapInstruction);
             }
 
@@ -779,14 +1128,36 @@ let canDrawCard = true;
             currentPlayerDiv.textContent = `התור של: ${players[currentPlayerIndex].name}`;
         }
 
+        function updateGroupDeckStatus() {
+            const groupDeck = document.getElementById('groupDeck');
+            const groupRequirement = document.getElementById('groupRequirement');
+            const currentPlayer = players[currentPlayerIndex];
+            
+            const hasCards = currentPlayer.skipCards > 0 || currentPlayer.swapCards > 0;
+            
+            if (hasCards) {
+                groupDeck.classList.remove('disabled');
+                groupRequirement.style.display = 'none';
+            } else {
+                groupDeck.classList.add('disabled');
+                groupRequirement.style.display = 'block';
+                groupRequirement.textContent = 'אין כרטיסים זמינים';
+            }
+        }
+
         function drawCard(deckType) {
             const deck = gameConfig[deckType];
+            if (!deck || !deck.regular || deck.regular.length === 0) {
+                alert('אין משימות זמינות בערימה זו');
+                return;
+            }
+
             const isBonus = Math.random() < 0.2; // 20% chance for bonus card
             
             let cardText;
             let cardClass = deckType;
             
-            if (isBonus && deck.bonus.length > 0) {
+            if (isBonus && deck.bonus && deck.bonus.length > 0) {
                 cardText = deck.bonus[Math.floor(Math.random() * deck.bonus.length)];
                 cardClass += ' bonus';
                 
@@ -801,8 +1172,17 @@ let canDrawCard = true;
 
             const cardElement = document.getElementById('currentCard');
             cardElement.className = `card ${cardClass}`;
+            
+            let deckName;
+            switch(deckType) {
+                case 'bold': deckName = 'אמיצים'; break;
+                case 'solid': deckName = 'פחדנים'; break;
+                case 'group': deckName = 'קבוצתי'; break;
+                default: deckName = deckType;
+            }
+            
             cardElement.innerHTML = `
-                <h4>${deckType.charAt(0).toUpperCase() + deckType.slice(1)} Card</h4>
+                <h4>קלף ${deckName}</h4>
                 <p>${cardText}</p>
             `;
 
@@ -819,11 +1199,19 @@ let canDrawCard = true;
         }
 
         function handleBonusCard(cardText) {
-            if (cardText.includes('Everyone gets an extra Skip card')) {
-                players.forEach(player => player.skipCards++);
-            } else if (cardText.includes('Get an extra Swap card')) {
+            if (cardText.includes('כל המשתתפים מקבלים כרטיס')) {
+                players.forEach(player => {
+                    if (cardText.includes('עבור')) {
+                        player.skipCards++;
+                    } else {
+                        // Let player choose
+                        const choice = Math.random() > 0.5 ? 'skipCards' : 'swapCards';
+                        player[choice]++;
+                    }
+                });
+            } else if (cardText.includes('קבל/י כרטיס')) {
                 players[currentPlayerIndex].swapCards++;
-            } else if (cardText.includes('Choose any player to lose a Skip card')) {
+            } else if (cardText.includes('בחר/י משתתף שיאבד כרטיס')) {
                 // Find players with skip cards
                 const playersWithSkip = players.filter(p => p.skipCards > 0);
                 if (playersWithSkip.length > 0) {
@@ -861,34 +1249,84 @@ let canDrawCard = true;
             }, 2000);
         }
 
-        
         function handleDeckClick(deckType) {
             if (!canDrawCard) return;
 
+            if (deckType === 'group') {
+                const currentPlayer = players[currentPlayerIndex];
+                const hasCards = currentPlayer.skipCards > 0 || currentPlayer.swapCards > 0;
+                
+                if (!hasCards) {
+                    alert('עליך להחזיק כרטיס עבור או החלף כדי לקחת משימה קבוצתית');
+                    return;
+                }
+                
+                // Show forfeiture selector
+                showForfeitureSelector();
+                return;
+            }
+
             drawCard(deckType);
             canDrawCard = false;
-
             document.getElementById('deckOverlay').style.display = 'block';
         }
 
+        function showForfeitureSelector() {
+            const currentPlayer = players[currentPlayerIndex];
+            const forfeitureSelector = document.getElementById('forfeitureSelector');
+            const skipBtn = document.getElementById('forfeitSkipBtn');
+            const swapBtn = document.getElementById('forfeitSwapBtn');
+            
+            skipBtn.disabled = currentPlayer.skipCards === 0;
+            swapBtn.disabled = currentPlayer.swapCards === 0;
+            
+            forfeitureSelector.style.display = 'block';
+            forfeitureMode = true;
+        }
+
+        function forfeitCard(cardType) {
+            const currentPlayer = players[currentPlayerIndex];
+            
+            if (cardType === 'skip' && currentPlayer.skipCards > 0) {
+                currentPlayer.skipCards--;
+            } else if (cardType === 'swap' && currentPlayer.swapCards > 0) {
+                currentPlayer.swapCards--;
+            } else {
+                return;
+            }
+            
+            // Hide forfeiture selector
+            document.getElementById('forfeitureSelector').style.display = 'none';
+            forfeitureMode = false;
+            
+            // Draw group card
+            drawCard('group');
+            canDrawCard = false;
+            document.getElementById('deckOverlay').style.display = 'block';
+            updatePlayersList();
+            updateGroupDeckStatus();
+        }
 
         function nextTurn() {
             canDrawCard = true;
             document.getElementById('deckOverlay').style.display = 'none';
+            document.getElementById('forfeitureSelector').style.display = 'none';
 
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             updateCurrentPlayer();
             updatePlayersList();
+            updateGroupDeckStatus();
             
             // Hide next turn button and reset card
             document.getElementById('nextTurnBtn').style.display = 'none';
             cardDrawn = false;
+            forfeitureMode = false;
             
             const cardElement = document.getElementById('currentCard');
             cardElement.className = 'card';
             cardElement.innerHTML = `
-                <h4>Choose Your Deck</h4>
-                <p>Select Bold or Solid deck to draw your card.</p>
+                <h4>בחרו את הערימה</h4>
+                <p>בחרו ערימת אמיצים, פחדנים או משימה קבוצתית כדי למשוך את הקלף שלכם.</p>
             `;
         }
 
@@ -896,9 +1334,10 @@ let canDrawCard = true;
             if (players[currentPlayerIndex].skipCards > 0) {
                 players[currentPlayerIndex].skipCards--;
                 updatePlayersList();
+                updateGroupDeckStatus();
                 canDrawCard = true;
                 document.getElementById('deckOverlay').style.display = 'none';
-                alert(`${players[currentPlayerIndex].name} בחר\ה לדלג על משימה!`);
+                alert(`${players[currentPlayerIndex].name} בחר\\ה לדלג על משימה!`);
                 nextTurn();
             }
         }
@@ -916,19 +1355,15 @@ let canDrawCard = true;
                 canDrawCard = true;
                 document.getElementById('deckOverlay').style.display = 'none';
                 
-                alert(`${players[currentPlayerIndex].name} השתמש\ה בהחלף! ${players[targetIndex].name} את\ה תשלימ\י את המשימה במקום.`);
+                alert(`${players[currentPlayerIndex].name} השתמש\\ה בהחלף! ${players[targetIndex].name} את\\ה תשלימ\\י את המשימה במקום.`);
                 
                 currentPlayerIndex = targetIndex;
                 swapMode = false;
                 
                 updateCurrentPlayer();
                 updatePlayersList();
+                updateGroupDeckStatus();
             }
-        }
-
-        function cancelSwap() {
-            swapMode = false;
-            updatePlayersList();
         }
     </script>
 </body>
