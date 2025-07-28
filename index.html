@@ -101,6 +101,34 @@
             color: #666;
         }
 
+        .gender-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .gender-icon {
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            padding: 3px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .gender-icon:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        .gender-icon.selected {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.3);
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
         .remove-player-btn {
             background: rgba(255,0,0,0.8);
             color: white;
@@ -193,6 +221,39 @@
             border: 1px solid rgba(255,255,255,0.2);
             display: flex;
             flex-direction: column;
+        }
+
+        .special-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .special-btn {
+            width: 80px;
+            height: 80px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.9);
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .special-btn:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .special-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .card-decks {
@@ -325,6 +386,11 @@
             border-color: #f59e0b;
         }
 
+        .card.special {
+            border-color: #8b5cf6;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        }
+
         .next-turn {
             background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
             color: white;
@@ -397,6 +463,17 @@
             color: #2d3748;
             margin-bottom: 10px;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .player-gender-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.8);
+            padding: 2px;
         }
 
         .cards-info {
@@ -734,6 +811,15 @@
                 gap: 20px;
                 flex-wrap: wrap;
             }
+
+            .special-buttons {
+                gap: 20px;
+            }
+
+            .special-btn {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
@@ -750,9 +836,17 @@
             <div class="players-grid" id="playersGrid">
                 <div class="player-card">
                     <input type="text" class="name-input" placeholder="שם השחקן 1">
+                    <div class="gender-selector">
+                        <img src="male.png" alt="Male" class="gender-icon" onclick="selectGender(this, 'male')">
+                        <img src="female.png" alt="Female" class="gender-icon" onclick="selectGender(this, 'female')">
+                    </div>
                 </div>
                 <div class="player-card">
                     <input type="text" class="name-input" placeholder="שם השחקן 2">
+                    <div class="gender-selector">
+                        <img src="male.png" alt="Male" class="gender-icon" onclick="selectGender(this, 'male')">
+                        <img src="female.png" alt="Female" class="gender-icon" onclick="selectGender(this, 'female')">
+                    </div>
                 </div>
             </div>
             <div class="button-row">
@@ -810,6 +904,16 @@
             <div class="game-area">
                 <button class="next-turn" onclick="nextTurn()" style="display: none;" id="nextTurnBtn">תור הבא</button>
                 
+                <!-- Special Buttons -->
+                <div class="special-buttons">
+                    <button class="special-btn" onclick="roomAction()" title="חדר פרטי">
+                        <img src="door.png" alt="Room">
+                    </button>
+                    <button class="special-btn" onclick="bottleAction()" title="בחירת ערימה אקראית">
+                        <img src="bottle.png" alt="Bottle">
+                    </button>
+                </div>
+                
                 <!-- Forfeiture Selector for Group Deck -->
                 <div id="forfeitureSelector" class="forfeiture-selector" style="display: none;">
                     <h4>בחר איזה כרטיס לוותר עליו כדי לקחת משימה קבוצתית:</h4>
@@ -865,80 +969,23 @@
         let gameConfig = {
             bold: {
                 regular: [
-                    "עמבוש עליך - לך לבד ל2 דקות מאיזור המשחק, הקבוצה תתייעץ איזו משימה להטיל עליך",
-                    "חובה: שב/י על הברכיים של מישהו שאינו בן/בת הזוג שלך ל-3 דקות",
-                    "חובה: הסר/י שני פריטי לבוש (לא תחתונים... עדיין)",
-                    "חובה: תן/י עיסוי חזה/גב מתחת לבגדים למישהו/י מהקבוצה",
-                    "חובה: תאר/י בפירוט את הפנטזיה המינית הכי מטורפת שלך",
-                    "חובה עליך לשכב על הגב עם כיסוי לעיניים, אחד המשתתפים במשך כ-4 דק' יעשה בך כרצונו - עליך לנחש את שם המשתתף, ניחשת בהצלחה,הטל על משתתף זה חובה כרצונך",
-                    "חובה: בחר משתתף והכנס לו אצבע לחור התחת, לקק את האצבע מול כולם",
-                    "חובה: שחק 'אבן נייר או מספרים' עם בן הזוג שלך , המנצח יטיל על השני משימה",
-                    "חובה: לכו לחדר אחר עם בן/בת הזוג של מישהו אחר ל-5 דקות (רק נשיקות/ליטופים)",
-                    "חובה עליך לאונן מול כולם עד גמירה (תוכלי להשתמש באחד מהצעצועים, או להיעזר באחד המשתתפים לבחרתך)",
-                    "חובה: הסר/י פריט לבוש אחד בצורה הכי סקסית שאת/ה יכול/ה",
-                    "הורד בגדים עד תחתון (וחזיה אם יש)",
-                    "כל שאר השחקנים ילכו להתבודד ל 5 דקות, אתה נשאר עצוב וגלמוד,שאר השחקנים יבחרו משימה לחייב אותך",
-                    "בחר משתתף שיכסה את עיניו - הקבוצה בשקט תעשה לו (מלבד חדירה) ככל העולה על רוח הקבוצה כ-5 דקות",
-                    "ספר על סטייה מינית מיוחדת שיש בך"
+                    "עמבוש עליך - לך לבד ל2 דקות מאיזור המשחק, הקבוצה תתייעץ איזו משימה להטיל עליך"
                 ],
                 bonus: [
-                    "בונוס ➕: קבל כרטיס 'עבור' נוסף!",
-                    "בונוס 🎯: בחר/י משתתף שיאבד כרטיס 'עבור'",
-                    "בונוס 🔄: החלף מקומות עם זוג אחר בסיבוב הקרוב",
-                    "בונוס 😂: כל המשתתפים חייבים לשתף סוד מצחיק אחד",
-                    "בונוס 🎁: קיבלת הגנה למשך 2 סיבובים תוכל לבחור שלא להשתתף!",
-                    "בונוס ➕: קבל/י כרטיס 'החלף' נוסף לשימוש עתידי",
-                    "בונוס 💡: שאל את בן/בת הזוג שאלה אמיצה במיוחד",
-                    "בונוס 🔥: בחר/י משתתף אחר לבצע את המשימה הבאה שתקבל במקומך (ללא שימוש בכרטיס)"
+                    "בונוס ➕: קבל כרטיס 'עבור' נוסף!"
                 ]
             },
             solid: {
                 regular: [
-                    "חובה: נשק/י את בן/בת הזוג שלך בלשון למשך 15 שניות",
-                    "חובה: הניח/י יד על הירך הפנימית של האדם מימינך למשך דקה",
-                    "חובה: במהלך ה-5 דק' הקרורובת,עסו את כפות רגלי בן/בת הזוג.ראשית, עסו את העקבים, ואז המשיכו עם האצבעות - הן רגישות מאוד, במיוחד הזרת",
-                    "חובה: שב/י על הברכיים של האדם מימינך למשך דקה",
-                    "חובה: החלף/י חולצה/פריט לבוש אחד עם מישהו שאינו בן/בת הזוג שלך",
-                    "חובה: תן/י נשיקה על מקום לא שגרתי (צוואר, כתף, יד) למישהו שאינו בן/בת הזוג שלך",
-                    "חובה: תן/י עיסוי גב לאדם שיבחר בן/בת הזוג שלך (ללא הסרת בגדים)",
-                    "חובה: שכב/י על הגב, ומישהו מהקבוצה יניח קוביית קרח על הבטן שלך עד שתנמס",
-                    "חובה: רקד/י ריקוד סקסי מול בן/בת הזוג של מישהו אחר בקבוצה",
-                    "חובה: לחש/י משהו ארוטי באוזן של האדם משמאלך (בשקט כך שרק הוא ישמע)",
-                    "חובה: תן/י נשיקה על הצוואר למישהו שאינו בן/בת הזוג שלך",
-                    "😀 חובה: חייך עד התור הבא שלך",
-                    "חובה: שב/י בתנוחה הכי סקסית שאת/ה יכול/ה, והקבוצה תצביע אם הצלחת",
-                    "חובה: הניח/י יד על הירך של האדם מימינך למשך סיבוב אחד",
-                    "חובה: לקק בעדינות את שפתייך תוך כדי הסתכלות על בן/בת הזוג",
-                    "חובה: חקה את התנוחה המינית הכי מגוחכת שאתם מכירים",
-                    "ספר מה הפנטזיה הכי פרועה שלך",
-                    "חובה: לכו לפינה עם בן/בת הזוג שלך ל-2 דקות של נשיקות",
-                    "חובה: הסר/י פריט לבוש אחד (לא תחתונים!) ותלי אותו על כיסא",
-                    "ספר מה הכי יפה אצל כל אחד מהמשתתפים"
+                    "חובה: נשק/י את בן/בת הזוג שלך בלשון למשך 15 שניות"
                 ]
             },
             group: {
                 regular: [
-                    "משימה קבוצתית: כל המשתתפים יוצרים מעגל ונותנים עיסוי לאדם שלידם למשך 5 דקות",
-                    "משימה קבוצתית: על כל הבנות להתנשק כ-3 דקות",
-                    "משימה קבוצתית: חפש את הקוביה, כל זוג יחביא קוביה בגוף האישה, החליפו זוגות, הזוג שמצא אחרון יחוייב שמשימה לבחירת שאר המשתתפים",
-                    "משימה קבוצתית: כולם חייבים לשתף סוד אחד שמביך אותם",
-                    "משימה קבוצתית: הבנות נשארות בחדר והבנים יוצאים לדקה - הבנות מחליטות על משימה משותפת לבנים",
-                    "משימה קבוצתית: כל זוג חייב לבחור זוג אחר ולתת להם נשיקה משותפת (כל אחד נושק אחד מהזוג השני)",
-                    "משימה קבוצתית: כולם מורידים פריט לבוש אחד ויוצרים ערימה משותפת - אחר כך כל אחד מגריל פריט אקראי ללבוש",
-                    "משימה קבוצתית: חברו לזוגות חדשים (לא הזוגות המקוריים) והתנשקו למשך דקתיים",
-                    "משימה קבוצתית: הנשים יכניסו את היד למכנס של היושב מימינם, והגברים יתנו נשיקה לבחורה מימינם",
-                    "משימה קבוצתית: הקבוצה בוחרת את הוותיק ובעל הנסיון המיני, הוא יבחר משימה קבוצתית חדשה",
-                    "משימה קבוצתית: כולם לוקחים שוט של וודקה נקייה",
-                    "משימה קבוצתית: כולם חייבים לספר מה הם הכי אוהבים אצל האדם מימינם (משהו פיזי)",
-                    "משימה קבוצתית: בנות לבד וגברים לבד - כל קבוצה מחליטה על משימה לקבוצה השנייה",
-                    "משימה קבוצתית: כולם חייבים להתוודות על פנטזיה שיש להם על מישהו אחר בחבורה",
-                    "משימה קבוצתית: יוצרים תחרות ריקודים סקסיים - כל זוג נגד זוג אחר, הזוג המנצח - מוגן למשך 2 סיבובים"
+                    "משימה קבוצתית: כל המשתתפים יוצרים מעגל ונותנים עיסוי לאדם שלידם למשך 5 דקות"
                 ],
                 bonus: [
-                    "בונוס קבוצתי 🎉: כל המשתתפים (מלבד מי שהרים את הכרטיס) מקבלים כרטיס נוסף לבחירתם (עבור או החלף)!",
-                    "בונוס קבוצתי 🎯: הקבוצה מחליטה מי מאבד כרטיס",
-                    "בונוס קבוצתי 🔄: ערבבו את סדר השחקנים מחדש",
-                    "בונוס קבוצתי 💫: הקבוצה יכולה לבטל את הסיבוב הקרוב של מישהו"
+                    "בונוס קבוצתי 🎉: כל המשתתפים (מלבד מי שהרים את הכרטיס) מקבלים כרטיס נוסף לבחירתם (עבור או החלף)!"
                 ]
             }
         };
@@ -957,6 +1004,21 @@
             updateTaskManagementDisplay();
         });
 
+        // Gender Selection Function
+        function selectGender(element, gender) {
+            const playerCard = element.closest('.player-card');
+            const genderIcons = playerCard.querySelectorAll('.gender-icon');
+            
+            // Remove selected class from all icons in this player card
+            genderIcons.forEach(icon => icon.classList.remove('selected'));
+            
+            // Add selected class to clicked icon
+            element.classList.add('selected');
+            
+            // Store gender data
+            element.closest('.player-card').setAttribute('data-gender', gender);
+        }
+
         // Setup and Navigation Functions
         function addPlayer() {
             const playersGrid = document.getElementById('playersGrid');
@@ -966,6 +1028,10 @@
             playerCard.className = 'player-card';
             playerCard.innerHTML = `
                 <input type="text" class="name-input" placeholder="שם השחקן ${playerCount + 1}">
+                <div class="gender-selector">
+                    <img src="male.png" alt="Male" class="gender-icon" onclick="selectGender(this, 'male')">
+                    <img src="female.png" alt="Female" class="gender-icon" onclick="selectGender(this, 'female')">
+                </div>
                 <button class="remove-player-btn" onclick="removePlayer(this)">×</button>
             `;
             
@@ -986,16 +1052,22 @@
         }
 
         function startGame() {
-            const nameInputs = document.querySelectorAll('.name-input');
+            const playerCards = document.querySelectorAll('.player-card');
             let allNamesFilled = true;
             const names = [];
 
-            nameInputs.forEach(input => {
-                const name = input.value.trim();
+            playerCards.forEach(card => {
+                const nameInput = card.querySelector('.name-input');
+                const name = nameInput.value.trim();
+                const gender = card.getAttribute('data-gender') || null;
+                
                 if (name === '') {
                     allNamesFilled = false;
                 } else {
-                    names.push(name);
+                    names.push({
+                        name: name,
+                        gender: gender
+                    });
                 }
             });
 
@@ -1010,7 +1082,7 @@
             }
 
             // Check for duplicate names
-            const uniqueNames = new Set(names);
+            const uniqueNames = new Set(names.map(p => p.name));
             if (uniqueNames.size !== names.length) {
                 alert('כל השחקנים חייבים להיות עם שמות שונים.');
                 return;
@@ -1018,9 +1090,10 @@
 
             // Initialize players
             players = [];
-            names.forEach((name, index) => {
+            names.forEach((playerData, index) => {
                 players.push({
-                    name: name,
+                    name: playerData.name,
+                    gender: playerData.gender,
                     skipCards: 2,
                     swapCards: 2
                 });
@@ -1045,6 +1118,45 @@
         function backToSetup() {
             document.getElementById('taskManagement').style.display = 'none';
             document.getElementById('setupScreen').style.display = 'block';
+        }
+
+        // Special Button Functions
+        function roomAction() {
+            const malePlayers = players.filter(p => p.gender === 'male');
+            const femalePlayers = players.filter(p => p.gender === 'female');
+            
+            if (malePlayers.length === 0 || femalePlayers.length === 0) {
+                alert('צריך לפחות שחקן אחד זכר ושחקנית אחת נקבה עם מגדר נבחר כדי להשתמש בפעולת החדר');
+                return;
+            }
+            
+            const selectedMale = malePlayers[Math.floor(Math.random() * malePlayers.length)];
+            const selectedFemale = femalePlayers[Math.floor(Math.random() * femalePlayers.length)];
+            
+            const cardElement = document.getElementById('currentCard');
+            cardElement.className = 'card special show';
+            cardElement.innerHTML = `
+                <h4>חדר פרטי 🚪</h4>
+                <p>${selectedMale.name} ו${selectedFemale.name} יכולים לבלות יחד בחדר במשך 5 דקות.</p>
+            `;
+        }
+
+        function bottleAction() {
+            const decks = ['bold', 'solid', 'group'];
+            const deckNames = {
+                'bold': 'האמיצים',
+                'solid': 'הפחדנים',
+                'group': 'הקבוצתיות'
+            };
+            
+            const selectedDeck = decks[Math.floor(Math.random() * decks.length)];
+            
+            const cardElement = document.getElementById('currentCard');
+            cardElement.className = 'card special show';
+            cardElement.innerHTML = `
+                <h4>הבקבוק בחר! 🍾</h4>
+                <p>משכו קלף מערימת ${deckNames[selectedDeck]}.</p>
+            `;
         }
 
         // Task Management Functions
@@ -1147,8 +1259,15 @@
                 }
                 
                 playerDiv.className = playerClass;
+                
+                // Add gender icon if available
+                let genderIconHtml = '';
+                if (player.gender) {
+                    genderIconHtml = `<img src="${player.gender}.png" alt="${player.gender}" class="player-gender-icon">`;
+                }
+                
                 playerDiv.innerHTML = `
-                    <h4>${player.name}</h4>
+                    <h4>${genderIconHtml}${player.name}</h4>
                     <div class="cards-info">
                         <span>עבור: <span class="card-count">${player.skipCards}</span></span>
                         <span>החלף: <span class="card-count">${player.swapCards}</span></span>
